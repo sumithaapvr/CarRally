@@ -1,0 +1,165 @@
+.view-participants-container {
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  background-color: #FDFAF6;
+  min-height: 100vh;
+}
+
+.view-participants-container h1 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.add-participant-section,
+.upload-participants-section,
+.participants-list {
+  background-color: #fff;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.add-participant-section h2,
+.upload-participants-section h2,
+.participants-list h2 {
+  color: #333;
+  margin-top: 0;
+  margin-bottom: 15px;
+  border-bottom: 2px solid #eee;
+  padding-bottom: 10px;
+}
+
+.add-participant-section input[type="text"],
+.add-participant-section input[type="number"],
+.add-participant-section input[type="email"] {
+  width: calc(50% - 22px); /* Adjusted width to make them medium */
+  padding: 10px;
+  margin-bottom: 10px;
+  margin-right: 10px; /* Add some spacing between fields */
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 15px;
+  display: inline-block; /* Allows them to sit next to each other */
+}
+
+/* Target the last input to remove right margin */
+.add-participant-section input[type="email"]:last-child,
+.add-participant-section input[type="number"]:nth-last-child(2) {
+  margin-right: 0;
+}
+
+.add-participant-section button {
+  padding: 10px 15px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.3s ease;
+  display: block; /* Make the button take full width and appear below inputs */
+  width: 7%;
+  margin-top: 15px;
+}
+
+.add-participant-section button:hover {
+  opacity: 0.85;
+}
+
+.upload-participants-section input[type="file"] {
+  margin-bottom: 15px;
+}
+
+.upload-participants-section button {
+  padding: 10px 15px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.3s ease;
+}
+
+.upload-participants-section button:hover {
+  opacity: 0.85;
+}
+
+.upload-participants-section p {
+  font-size: 14px;
+  color: #666;
+  margin-top: 10px;
+}
+
+.participants-list {
+  padding-top: 15px;
+}
+
+.participant-item {
+  display: flex;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.participant-item:last-child {
+  border-bottom: none;
+}
+
+.participant-item .user-icon {
+  font-size: 1.5em;
+  color: #007bff;
+  margin-right: 10px;
+}
+
+.participant-item span {
+  margin-right: 15px;
+  color: #333;
+}
+
+.view-participants-container a {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 10px 15px;
+  background-color: #6c757d;
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: bold;
+  transition: 0.3s ease;
+}
+
+.view-participants-container a:hover {
+  opacity: 0.85;
+}
+
+@media (max-width: 600px) {
+  .add-participant-section input[type="text"],
+  .add-participant-section input[type="number"],
+  .add-participant-section input[type="email"] {
+    width: calc(100% - 12px); /* Back to full width on smaller screens */
+    padding: 8px;
+    font-size: 14px;
+    margin-right: 0; /* Remove right margin on smaller screens */
+    display: block; /* Stack them on smaller screens */
+  }
+
+  .add-participant-section button,
+  .upload-participants-section button,
+  .view-participants-container a {
+    padding: 8px 12px;
+    font-size: 14px;
+  }
+
+  .participant-item span {
+    font-size: 14px;
+    margin-right: 10px;
+  }
+
+  .participant-item .user-icon {
+    font-size: 1.2em;
+    margin-right: 8px;
+  }
+}

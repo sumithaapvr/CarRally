@@ -1,0 +1,203 @@
+import React, { useState } from 'react';
+import * as XLSX from 'xlsx';
+import {
+  Bar,
+  Pie,
+  Line
+} from 'react-chartjs-2';
+import {
+  Chart as ChartJS,
+  ArcElement,
+  BarElement,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Tooltip,
+  Legend,
+} from 'chart.js';
+import './Analysis.css';
+
+ChartJS.register(
+  ArcElement,
+  BarElement,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Tooltip,
+  Legend
+);
+
+const Analysis = () => {
+  const [barData, setBarData] = useState(null);
+  const [pieData, setPieData] = useState(null);
+  const [lineData, setLineData] = useState(null);
+  const [heatmapTable, setHeatmapTable] = useState(null);
+  const [summary, setSummary] = useState(null);
+
+  const handleFileUpload = (e) => {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      const bstr = evt.target.result;
+      const workbook = XLSX.read(bstr, { type: 'binary' });
+      const wsname = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[wsname];
+      const jsonData = XLSX.utils.sheet_to_json(worksheet);
+      processData(jsonData);
+    };
+    reader.readAsBinaryString(file);
+  };
+
+  const calculateMinutes = (start, end) => {
+    if (!start || !end || !start.includes(':') || !end.includes(':')) return null;
+    const [sh, sm] = start.split(':').map(Number);
+    const [eh, em] = end.split(':').map(Number);
+    return (eh * 60 + em) - (sh * 60 + sm);
+  };
+
+  const processData = (data) => {
+    const penalties = {};
+    const trendLabels = [];
+    const trendActual = [];
+    const trendIdeal = [];
+    const heatmap = [];
+
+    const delayCategories = { Early: 0, OnTime: 0, Late: 0 };
+
+    data.forEach((row) => {
+      const driver = row.Driver;
+
+      const tc1Actual = calculateMinutes(row.TC1_Start, row.TC1_Finish);
+      const tc2Actual = calculateMinutes(row.TC2_Start, row.TC2_Finish);
+
+      const tc1Ideal = row.TC1_Ideal;
+      const tc2Ideal = row.TC2_Ideal;
+
+      if (tc1Actual === null || tc2Actual === null || tc1Ideal == null || tc2Ideal == null) return;
+
+      const delay1 = tc1Actual - tc1Ideal;
+      const delay2 = tc2Actual - tc2Ideal;
+      const totalDelay = delay1 + delay2;
+
+      penalties[driver] = totalDelay;
+
+      // Pie chart category
+      if (totalDelay < 0) delayCategories.Early++;
+      else if (totalDelay === 0) delayCategories.OnTime++;
+      else delayCategories.Late++;
+
+      // Line chart trend
+      trendLabels.push(`${driver} - TC1`);
+      trendLabels.push(`${driver} - TC2`);
+      trendActual.push(tc1Actual, tc2Actual);
+      trendIdeal.push(tc1Ideal, tc2Ideal);
+
+      // Heatmap
+      heatmap.push({ driver, TC1: delay1, TC2: delay2 });
+    });
+
+    setBarData({
+      labels: Object.keys(penalties),
+      datasets: [
+        {
+          label: 'Total Penalty (min)',
+          data: Object.values(penalties),
+          backgroundColor: 'rgba(255, 99, 132, 0.6)',
+        },
+      ],
+    });
+
+    setPieData({
+      labels: ['Early', 'On Time', 'Late'],
+      datasets: [
+        {
+          data: [
+            delayCategories.Early,
+            delayCategories.OnTime,
+            delayCategories.Late,
+          ],
+          backgroundColor: ['#36A2EB', '#4BC0C0', '#FF6384'],
+        },
+      ],
+    });
+
+    setLineData({
+      labels: trendLabels,
+      datasets: [
+        {
+          label: 'Actual Time',
+          data: trendActual,
+          fill: false,
+          borderColor: '#FF6384',
+        },
+        {
+          label: 'Ideal Time',
+          data: trendIdeal,
+          fill: false,
+          borderColor: '#36A2EB',
+        },
+      ],
+    });
+
+    setHeatmapTable(heatmap);
+    setSummary({ totalDrivers: data.length });
+  };
+
+  return (
+    <div className="analysis-container">
+      <h2>Car Rally Performance Analysis</h2>
+      <input type="file" accept=".xlsx, .xls" onChange={handleFileUpload} className="file-input" />
+
+      {summary && <p>Total Drivers Analyzed: {summary.totalDrivers}</p>}
+
+      {barData && (
+        <div className="chart-section">
+          <h3>Bar Chart: Total Penalties by Driver</h3>
+          <Bar data={barData} />
+        </div>
+      )}
+
+      {pieData && (
+        <div className="chart-section">
+          <h3>Pie Chart: Arrival Status Distribution</h3>
+          <Pie data={pieData} />
+        </div>
+      )}
+
+      {lineData && (
+        <div className="chart-section">
+          <h3>Line Plot: Time Trend over Stages</h3>
+          <Line data={lineData} />
+        </div>
+      )}
+
+      {heatmapTable && (
+        <div className="chart-section">
+          <h3>Heatmap: Penalties across Stages</h3>
+          <table className="heatmap-table">
+            <thead>
+              <tr>
+                <th>Driver</th>
+                <th>TC1 Penalty (min)</th>
+                <th>TC2 Penalty (min)</th>
+              </tr>
+            </thead>
+            <tbody>
+              {heatmapTable.map((row, index) => (
+                <tr key={index}>
+                  <td>{row.driver}</td>
+                  <td className={`cell ${row.TC1 > 0 ? 'late' : row.TC1 < 0 ? 'early' : 'ontime'}`}>{row.TC1}</td>
+                  <td className={`cell ${row.TC2 > 0 ? 'late' : row.TC2 < 0 ? 'early' : 'ontime'}`}>{row.TC2}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default Analysis;

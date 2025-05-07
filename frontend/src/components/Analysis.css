@@ -1,0 +1,70 @@
+.analysis-container {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: #f7f9fc;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.analysis-container h2 {
+  text-align: center;
+  color: #003366;
+  margin-bottom: 1.5rem;
+  font-size: 2rem;
+}
+
+.file-input {
+  display: block;
+  margin: 0 auto 2rem auto;
+  padding: 0.6rem 1rem;
+  font-size: 1rem;
+  border: 2px solid #003366;
+  border-radius: 8px;
+  background-color: white;
+  color: #003366;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.file-input:hover {
+  background-color: #003366;
+  color: white;
+}
+
+.summary {
+  text-align: center;
+  margin-bottom: 2rem;
+  background-color: #eaf4ff;
+  padding: 1rem;
+  border-radius: 8px;
+  color: #003366;
+}
+
+.charts-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+
+.chart-section {
+  background-color: #ffffff;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.chart-section h3 {
+  text-align: center;
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+  color: #1a1a1a;
+}
+
+/* Responsive Layout */
+@media screen and (min-width: 768px) {
+  .charts-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}

@@ -1,0 +1,94 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Poppins', sans-serif;
+  background: #001f3f;
+  color: #fff;
+}
+
+.module-page {
+  min-height: 100vh;
+  width: 100%;
+  background-image: linear-gradient(rgba(0, 51, 102, 0.6), rgba(0, 51, 102, 0.6)),
+                    url('./assets/carr3.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: scroll; /* Important: allows background to move with scroll */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 80px 20px;
+  flex-direction: column;
+}
+
+.module-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 40px;
+  z-index: 1;
+}
+
+.module-card {
+  width: 260px;
+  height: 150px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.module-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.3);
+}
+
+.module-link {
+  text-decoration: none;
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: 600;
+  text-align: center;
+  padding: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  border-radius: 20px;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+.module-link:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #bbdefb;
+}
+
+.module-link h2 {
+  margin: 0;
+  padding: 0;
+  color: #ffffff;
+}
+
+@media (max-width: 768px) {
+  .module-container {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .module-card {
+    width: 90%;
+    height: 140px;
+  }
+
+  .module-link {
+    font-size: 18px;
+  }
+}
