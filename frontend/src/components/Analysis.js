@@ -1,33 +1,11 @@
 import React, { useState } from 'react';
 import * as XLSX from 'xlsx';
-import {
-  Bar,
-  Pie,
-  Line
-} from 'react-chartjs-2';
-import {
-  Chart as ChartJS,
-  ArcElement,
-  BarElement,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Tooltip,
-  Legend,
-} from 'chart.js';
+import { Bar, Pie, Line } from 'react-chartjs-2';
+import { Chart as ChartJS, ArcElement, BarElement, CategoryScale, LinearScale, PointElement, LineElement, Tooltip, Legend } from 'chart.js';
+import { FaChartBar, FaChartPie, FaChartLine, FaTable } from 'react-icons/fa';
 import './Analysis.css';
 
-ChartJS.register(
-  ArcElement,
-  BarElement,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Tooltip,
-  Legend
-);
+ChartJS.register(ArcElement, BarElement, CategoryScale, LinearScale, PointElement, LineElement, Tooltip, Legend);
 
 const Analysis = () => {
   const [barData, setBarData] = useState(null);
@@ -35,6 +13,8 @@ const Analysis = () => {
   const [lineData, setLineData] = useState(null);
   const [heatmapTable, setHeatmapTable] = useState(null);
   const [summary, setSummary] = useState(null);
+  const [fileUploaded, setFileUploaded] = useState(false);
+  const [selectedChart, setSelectedChart] = useState(null);
 
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
@@ -46,6 +26,7 @@ const Analysis = () => {
       const worksheet = workbook.Sheets[wsname];
       const jsonData = XLSX.utils.sheet_to_json(worksheet);
       processData(jsonData);
+      setFileUploaded(true);  // Mark file as uploaded
     };
     reader.readAsBinaryString(file);
   };
@@ -83,18 +64,15 @@ const Analysis = () => {
 
       penalties[driver] = totalDelay;
 
-      // Pie chart category
       if (totalDelay < 0) delayCategories.Early++;
       else if (totalDelay === 0) delayCategories.OnTime++;
       else delayCategories.Late++;
 
-      // Line chart trend
       trendLabels.push(`${driver} - TC1`);
       trendLabels.push(`${driver} - TC2`);
       trendActual.push(tc1Actual, tc2Actual);
       trendIdeal.push(tc1Ideal, tc2Ideal);
 
-      // Heatmap
       heatmap.push({ driver, TC1: delay1, TC2: delay2 });
     });
 
@@ -145,6 +123,13 @@ const Analysis = () => {
     setSummary({ totalDrivers: data.length });
   };
 
+  const chartCards = [
+    { key: 'bar', label: 'Bar Chart', icon: <FaChartBar size={40} />, available: barData },
+    { key: 'pie', label: 'Pie Chart', icon: <FaChartPie size={40} />, available: pieData },
+    { key: 'line', label: 'Line Chart', icon: <FaChartLine size={40} />, available: lineData },
+    { key: 'heatmap', label: 'Heatmap', icon: <FaTable size={40} />, available: heatmapTable },
+  ];
+
   return (
     <div className="analysis-container">
       <h2>Car Rally Performance Analysis</h2>
@@ -152,48 +137,72 @@ const Analysis = () => {
 
       {summary && <p>Total Drivers Analyzed: {summary.totalDrivers}</p>}
 
-      {barData && (
-        <div className="chart-section">
-          <h3>Bar Chart: Total Penalties by Driver</h3>
-          <Bar data={barData} />
+      {fileUploaded && !selectedChart && (
+        <div className="card-selection">
+          <h3>Select Analysis to View</h3>
+          <div className="cards-container">
+            {chartCards.map(card => (
+              <div
+                key={card.key}
+                className={`chart-card ${card.available ? '' : 'disabled'}`}
+                onClick={() => card.available && setSelectedChart(card.key)}
+              >
+                {card.icon}
+                <p>{card.label}</p>
+              </div>
+            ))}
+          </div>
         </div>
       )}
 
-      {pieData && (
+      {selectedChart && (
         <div className="chart-section">
-          <h3>Pie Chart: Arrival Status Distribution</h3>
-          <Pie data={pieData} />
-        </div>
-      )}
+          <button className="back-btn" onClick={() => setSelectedChart(null)}>← Back to Selection</button>
 
-      {lineData && (
-        <div className="chart-section">
-          <h3>Line Plot: Time Trend over Stages</h3>
-          <Line data={lineData} />
-        </div>
-      )}
+          {selectedChart === 'bar' && barData && (
+            <>
+              <h3>Bar Chart: Total Penalties by Driver</h3>
+              <Bar data={barData} />
+            </>
+          )}
 
-      {heatmapTable && (
-        <div className="chart-section">
-          <h3>Heatmap: Penalties across Stages</h3>
-          <table className="heatmap-table">
-            <thead>
-              <tr>
-                <th>Driver</th>
-                <th>TC1 Penalty (min)</th>
-                <th>TC2 Penalty (min)</th>
-              </tr>
-            </thead>
-            <tbody>
-              {heatmapTable.map((row, index) => (
-                <tr key={index}>
-                  <td>{row.driver}</td>
-                  <td className={`cell ${row.TC1 > 0 ? 'late' : row.TC1 < 0 ? 'early' : 'ontime'}`}>{row.TC1}</td>
-                  <td className={`cell ${row.TC2 > 0 ? 'late' : row.TC2 < 0 ? 'early' : 'ontime'}`}>{row.TC2}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          {selectedChart === 'pie' && pieData && (
+            <>
+              <h3>Pie Chart: Arrival Status Distribution</h3>
+              <Pie data={pieData} />
+            </>
+          )}
+
+          {selectedChart === 'line' && lineData && (
+            <>
+              <h3>Line Chart: Time Trend over Stages</h3>
+              <Line data={lineData} />
+            </>
+          )}
+
+          {selectedChart === 'heatmap' && heatmapTable && (
+            <>
+              <h3>Heatmap: Penalties across Stages</h3>
+              <table className="heatmap-table">
+                <thead>
+                  <tr>
+                    <th>Driver</th>
+                    <th>TC1 Penalty (min)</th>
+                    <th>TC2 Penalty (min)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {heatmapTable.map((row, index) => (
+                    <tr key={index}>
+                      <td>{row.driver}</td>
+                      <td className={`cell ${row.TC1 > 0 ? 'late' : row.TC1 < 0 ? 'early' : 'ontime'}`}>{row.TC1}</td>
+                      <td className={`cell ${row.TC2 > 0 ? 'late' : row.TC2 < 0 ? 'early' : 'ontime'}`}>{row.TC2}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </>
+          )}
         </div>
       )}
     </div>
