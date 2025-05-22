@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import * as XLSX from 'xlsx';
 import { Bar, Pie, Line } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, BarElement, CategoryScale, LinearScale, PointElement, LineElement, Tooltip, Legend } from 'chart.js';
@@ -15,6 +15,19 @@ const Analysis = () => {
   const [summary, setSummary] = useState(null);
   const [fileUploaded, setFileUploaded] = useState(false);
   const [selectedChart, setSelectedChart] = useState(null);
+
+  useEffect(() => {
+    // Retrieve data from localStorage when the component mounts
+    const savedState = JSON.parse(localStorage.getItem('analysisData'));
+    if (savedState) {
+      setBarData(savedState.barData);
+      setPieData(savedState.pieData);
+      setLineData(savedState.lineData);
+      setHeatmapTable(savedState.heatmapTable);
+      setSummary(savedState.summary);
+      setFileUploaded(true);
+    }
+  }, []);
 
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
@@ -76,51 +89,59 @@ const Analysis = () => {
       heatmap.push({ driver, TC1: delay1, TC2: delay2 });
     });
 
-    setBarData({
-      labels: Object.keys(penalties),
-      datasets: [
-        {
-          label: 'Total Penalty (min)',
-          data: Object.values(penalties),
-          backgroundColor: 'rgba(255, 99, 132, 0.6)',
-        },
-      ],
-    });
+    const newState = {
+      barData: {
+        labels: Object.keys(penalties),
+        datasets: [
+          {
+            label: 'Total Penalty (min)',
+            data: Object.values(penalties),
+            backgroundColor: 'rgba(255, 99, 132, 0.6)',
+          },
+        ],
+      },
+      pieData: {
+        labels: ['Early', 'On Time', 'Late'],
+        datasets: [
+          {
+            data: [
+              delayCategories.Early,
+              delayCategories.OnTime,
+              delayCategories.Late,
+            ],
+            backgroundColor: ['#36A2EB', '#4BC0C0', '#FF6384'],
+          },
+        ],
+      },
+      lineData: {
+        labels: trendLabels,
+        datasets: [
+          {
+            label: 'Actual Time',
+            data: trendActual,
+            fill: false,
+            borderColor: '#FF6384',
+          },
+          {
+            label: 'Ideal Time',
+            data: trendIdeal,
+            fill: false,
+            borderColor: '#36A2EB',
+          },
+        ],
+      },
+      heatmapTable: heatmap,
+      summary: { totalDrivers: data.length },
+    };
 
-    setPieData({
-      labels: ['Early', 'On Time', 'Late'],
-      datasets: [
-        {
-          data: [
-            delayCategories.Early,
-            delayCategories.OnTime,
-            delayCategories.Late,
-          ],
-          backgroundColor: ['#36A2EB', '#4BC0C0', '#FF6384'],
-        },
-      ],
-    });
+    // Save data to localStorage
+    localStorage.setItem('analysisData', JSON.stringify(newState));
 
-    setLineData({
-      labels: trendLabels,
-      datasets: [
-        {
-          label: 'Actual Time',
-          data: trendActual,
-          fill: false,
-          borderColor: '#FF6384',
-        },
-        {
-          label: 'Ideal Time',
-          data: trendIdeal,
-          fill: false,
-          borderColor: '#36A2EB',
-        },
-      ],
-    });
-
-    setHeatmapTable(heatmap);
-    setSummary({ totalDrivers: data.length });
+    setBarData(newState.barData);
+    setPieData(newState.pieData);
+    setLineData(newState.lineData);
+    setHeatmapTable(newState.heatmapTable);
+    setSummary(newState.summary);
   };
 
   const chartCards = [

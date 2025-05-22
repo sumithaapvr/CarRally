@@ -42,6 +42,9 @@ const participantSchema = new mongoose.Schema({
   age: Number,
   phone: String,
   email: String,
+  bloodgroup: String,
+  address: String,
+  lisencenumber: String,
   eventId: { type: mongoose.Schema.Types.ObjectId, ref: 'Event', required: true }, // Reference to the Event
 });
 const Participant = mongoose.model("Participant", participantSchema);
@@ -101,14 +104,39 @@ app.get("/api/participants/event/:eventId", async (req, res) => {
 
 app.post("/api/participants", async (req, res) => {
   try {
+    const { lisencenumber, eventId } = req.body;
+
+    // Check if participant already registered for the specific event
+    const existing = await Participant.findOne({ lisencenumber, eventId });
+    if (existing) {
+      return res.status(400).json({ message: "Participant already registered for this event." });
+    }
+
+    // Register new participant
     const newParticipant = new Participant(req.body);
-    const savedParticipant = await newParticipant.save();
-    res.status(201).json(savedParticipant);
+    await newParticipant.save();
+    res.status(201).json({ message: "Participant registered successfully." });
   } catch (error) {
-    console.error("Error saving participant:", error.message);
-    res.status(400).json({ error: "Failed to save participant." });
+    console.error("Error:", error);
+    res.status(500).json({ message: "Server error." });
   }
 });
+
+// Fetch participants for a specific event (optional for frontend validation)
+app.get("/api/participants", async (req, res) => {
+  try {
+    const { eventId } = req.query; // Assuming eventId is passed as a query parameter
+    if (!eventId) {
+      return res.status(400).json({ message: "Event ID is required." });
+    }
+
+    const participants = await Participant.find({ eventId });
+    res.json(participants);
+  } catch (err) {
+    res.status(500).json({ message: "Error fetching participants" });
+  }
+});
+
 
 // --- File Upload Configuration (using multer) ---
 const storage = multer.memoryStorage(); // Store file in memory
