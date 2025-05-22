@@ -1,0 +1,80 @@
+
+.winner-container-user {
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  background-color: #FDFAF6;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+h1 {
+  text-align: center;
+  color: #343a40; 
+  margin-bottom: 30px;
+}
+
+.search-bar-user {
+  margin-bottom: 30px;
+  width: 80%;
+  max-width: 600px;
+}
+
+.search-bar-user input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ced4da; 
+  border-radius: 8px;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+.winner-list-user {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 25px;
+  width: 90%;
+  max-width: 1200px;
+}
+
+.event-card-user {
+  background-color: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease-in-out;
+}
+
+.event-card-user:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+}
+
+.event-card-top-user {
+  background-color: #e9ecef; 
+  padding: 20px;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.event-card-bottom-user {
+  padding: 20px;
+}
+
+.event-card-user h3 {
+  margin: 0 0 15px;
+  color: #212529; 
+  font-size: 22px;
+}
+
+.event-card-user p {
+  margin: 8px 0;
+  color: #495057; 
+  font-size: 16px;
+}
+
+.event-card-user p strong {
+  font-weight: bold;
+  color: #343a40;
+  margin-right: 5px;
+}

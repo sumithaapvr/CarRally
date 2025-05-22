@@ -68,31 +68,6 @@
   opacity: 0.85;
 }
 
-.upload-participants-section input[type="file"] {
-  margin-bottom: 15px;
-}
-
-.upload-participants-section button {
-  padding: 10px 15px;
-  background-color: #28a745;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: bold;
-  transition: 0.3s ease;
-}
-
-.upload-participants-section button:hover {
-  opacity: 0.85;
-}
-
-.upload-participants-section p {
-  font-size: 14px;
-  color: #666;
-  margin-top: 10px;
-}
-
 .participants-list {
   padding-top: 15px;
 }
